@@ -1,6 +1,7 @@
 import AVFoundation
 
-open class Chirp {
+public class Chirp {
+    
     open class Sound {
         open var id: SystemSoundID
         open fileprivate(set) var count: Int = 1
@@ -13,10 +14,10 @@ open class Chirp {
     fileprivate let DefaultExtension = "wav"
     
     // MARK: - Singleton
-    open static let sharedManager = Chirp()
+    public static let instance = Chirp()
     
     // MARK: - Private Variables
-    open fileprivate(set) var sounds = [String:Sound]()
+    public fileprivate(set) var sounds = [String:Sound]()
     
     // MARK: - Public
 
@@ -26,7 +27,7 @@ open class Chirp {
     /// - parameter fileName: The file name
     ///
     /// - returns: The file name if successfully loaded
-    open func prepareSound(fileName: String) -> String? {
+    public func prepareSound(fileName: String) -> String? {
         let fixedSoundFileName = self.fixedSoundFileName(fileName: fileName)
         if let sound = soundForKey(fixedSoundFileName) {
             sound.count += 1
@@ -48,7 +49,7 @@ open class Chirp {
     /// Play a sound given its file name
     ///
     /// - parameter fileName: The file name
-    open func playSound(fileName: String) {
+    public func playSound(fileName: String) {
         let fixedSoundFileName = self.fixedSoundFileName(fileName: fileName)
         if let sound = soundForKey(fixedSoundFileName) {
             AudioServicesPlaySystemSound(sound.id)
@@ -59,7 +60,7 @@ open class Chirp {
     /// Remove a sound given its file name
     ///
     /// - parameter fileName: The file name
-    open func removeSound(fileName: String) {
+    public func removeSound(fileName: String) {
         let fixedSoundFileName = self.fixedSoundFileName(fileName: fileName)
         if let sound = soundForKey(fixedSoundFileName) {
             sound.count -= 1
@@ -71,14 +72,17 @@ open class Chirp {
     }
     
     // MARK: - Private
+    private init() {
+        
+    }
+    
     fileprivate func soundForKey(_ key: String) -> Sound? {
         return sounds[key]
     }
     
     fileprivate func fixedSoundFileName(fileName: String) -> String {
-
         var fixedSoundFileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
-        var soundFileComponents = fixedSoundFileName.components(separatedBy: ".")
+        let soundFileComponents = fixedSoundFileName.components(separatedBy: ".")
         if soundFileComponents.count == 1 {
             fixedSoundFileName = "\(soundFileComponents[0]).\(DefaultExtension)"
         }
